@@ -177,11 +177,17 @@ function checkForWin() {
   }
 }
 
+/*
+* Adds an event listener to the restart button
+*/
 function addRestartListener() {
   let restartButton = document.getElementById("restart");
   restartButton.addEventListener("click", restartGame);
 }
 
+/*
+* Restarts the game
+*/
 function restartGame() {
   board = [];
   clickHistory = [];
@@ -193,11 +199,17 @@ function restartGame() {
   makeHtmlBoard();
 }
 
+/*
+* Adds an event listener to the undo button
+*/
 function addUndoListener() {
   let undoButton = document.getElementById("undo");
   undoButton.addEventListener("click", undoClick);
 }
 
+/*
+* Allows user to undo previous move
+*/
 function undoClick() {
   // prevent undo if no clicks have been recorded
   if (clickHistory.length === 0) return;
