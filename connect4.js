@@ -12,6 +12,7 @@ const HEIGHT = 6;
 
 let currPlayer = 1; // active player: 1 or 2
 let board = []; // array of rows, each row is array of cells  (board[y][x])
+let clickHistory = []; //array that stores coordinates of all pieces played
 
 /** makeBoard: create in-JS board structure:
  *    board = array of rows, each row is array of cells  (board[y][x])
@@ -89,9 +90,13 @@ function placeInTable(y, x) {
 /** endGame: announce game end */
 
 function endGame(msg) {
+  let top = document.getElementById("column-top");
+  top.removeEventListener("click", handleClick);
+  
   // pop up alert message
-  alert(msg);
+  setTimeout(function() {alert(msg)}, 1000);
 }
+
 
 /** handleClick: handle click of column top to play piece */
 
@@ -104,6 +109,9 @@ function handleClick(evt) {
   if (y === null) {
     return;
   }
+
+  // stores coordinate of valid click
+  clickHistory.push([y, x]);
 
   // place piece in board and add to HTML table
   // update in-memory board
@@ -126,7 +134,7 @@ function handleClick(evt) {
 
   // switch players
   // TODO: switch currPlayer 1 <-> 2
-  currPlayer = (currPlayer === 1) ? 2 : 1;``
+  currPlayer = (currPlayer === 1) ? 2 : 1;
 
 }
 /** checkForWin: check board cell-by-cell for "does a win start here?" */
@@ -169,5 +177,47 @@ function checkForWin() {
   }
 }
 
+function addRestartListener() {
+  let restartButton = document.getElementById("restart");
+  restartButton.addEventListener("click", restartGame);
+}
+
+function restartGame() {
+  board = [];
+  clickHistory = [];
+
+  let gameTable = document.getElementById("board")
+  gameTable.innerHTML = "";
+
+  makeBoard();
+  makeHtmlBoard();
+}
+
+function addUndoListener() {
+  let undoButton = document.getElementById("undo");
+  undoButton.addEventListener("click", undoClick);
+}
+
+function undoClick() {
+  // prevent undo if no clicks have been recorded
+  if (clickHistory.length === 0) return;
+
+  //get the coordinates of last played piece
+  let lastCoord = clickHistory[clickHistory.length - 1];
+  let [y, x] = lastCoord;
+  
+  //get the last played piece in DOM
+  let lastCell = document.getElementById(`${y}-${x}`);
+  let lastPiece = lastCell.firstChild;
+  
+  //undo last click
+  lastPiece.remove();
+  clickHistory.pop();
+  board[y][x] = null;
+  currPlayer = (currPlayer === 1) ? 2 : 1;
+}
+
+addRestartListener();
+addUndoListener();
 makeBoard();
 makeHtmlBoard();
