@@ -18,10 +18,10 @@ let board = []; // array of rows, each row is array of cells  (board[y][x])
  */
 
 function makeBoard() {
-  // TODO: set "board" to empty HEIGHT x WIDTH matrix array
+  // set "board" to empty HEIGHT x WIDTH matrix array
   for (let i = 0; i < HEIGHT; i++) {
     let row = new Array(WIDTH).fill(null);
-    
+
     board.push(row);
   }
 }
@@ -43,7 +43,7 @@ function makeHtmlBoard() {
     top.append(headCell);
   }
   htmlBoard.append(top);
-  
+
 
   // dynamically creates the main part of html board
   // uses HEIGHT to create table rows
@@ -56,7 +56,7 @@ function makeHtmlBoard() {
       let gameCell = document.createElement("td");
 
       //sets the gameCell's id to its coordinate in the game board
-      gameCell.setAttribute("id",`${y}-${x}`);
+      gameCell.setAttribute("id", `${y}-${x}`);
 
       gameRow.append(gameCell);
     }
@@ -68,14 +68,17 @@ function makeHtmlBoard() {
 /** findSpotForCol: given column x, return top empty y (null if filled) */
 
 function findSpotForCol(x) {
-  // TODO: write the real version of this, rather than always returning 0
-  return 0;
+  for (let y = board.length - 1; y >= 0; y--) {
+    let currentRow = board[y];
+    if (currentRow[x] === null) return y;
+  }
+  return null;
 }
 
 /** placeInTable: update DOM to place piece into HTML table of board */
 
 function placeInTable(y, x) {
-  // TODO: make a div and insert into correct table cell
+  // make a div and insert into correct table cell
   let gamePiece = document.createElement("div");
   gamePiece.classList = `piece p${currPlayer}`;
 
@@ -86,7 +89,8 @@ function placeInTable(y, x) {
 /** endGame: announce game end */
 
 function endGame(msg) {
-  // TODO: pop up alert message
+  // pop up alert message
+  alert(msg);
 }
 
 /** handleClick: handle click of column top to play piece */
@@ -100,9 +104,9 @@ function handleClick(evt) {
   if (y === null) {
     return;
   }
-  
+
   // place piece in board and add to HTML table
-  // TODO: add line to update in-memory board
+  // update in-memory board
   board[y][x] = currPlayer;
   placeInTable(y, x);
 
@@ -112,16 +116,18 @@ function handleClick(evt) {
   }
 
   // check for tie
-  // TODO: check if all cells in board are filled; if so call, call endGame
-  let isTie = board.every(function(row) {
+  // check if all cells in board are filled; if so call, call endGame
+  // check the top row 
+  let isTie = board.every(function (row) {
     return row.every((val) => val !== null);
   });
-  
-  if(isTie) return endGame(`Tie!`);
+
+  if (isTie) return endGame('Tie!');
 
   // switch players
   // TODO: switch currPlayer 1 <-> 2
-  currPlayer = (currPlayer === 1) ? 2 : 1;
+  currPlayer = (currPlayer === 1) ? 2 : 1;``
+
 }
 /** checkForWin: check board cell-by-cell for "does a win start here?" */
 
@@ -133,8 +139,14 @@ function checkForWin() {
    */
   function _win(cells) {
 
-    //TODO: Check four cells to see if they're all legal & all color of current
+    //Check four cells to see if they're all legal & all color of current
     //player
+    return cells.every(function ([y, x]) {
+      return (
+        y < HEIGHT && y >= 0
+        && x < WIDTH && x >= 0
+        && board[y][x] === currPlayer);
+    })
 
   }
 
@@ -143,15 +155,11 @@ function checkForWin() {
   // ways to win: horizontal, vertical, diagonalDR, diagonalDL
   for (let y = 0; y < HEIGHT; y++) {
     for (let x = 0; x < WIDTH; x++) {
-      // TODO: assign values to the below variables for each of the ways to win
-      // horizontal has been assigned for you
-      // each should be an array of 4 cell coordinates:
-      // [ [y, x], [y, x], [y, x], [y, x] ]
-
+      // assign four diffent ways of winning
       let horiz = [[y, x], [y, x + 1], [y, x + 2], [y, x + 3]];
-      let vert;
-      let diagDL;
-      let diagDR;
+      let vert = [[y, x], [y + 1, x], [y + 2, x], [y + 3, x]];
+      let diagDL = [[y, x], [y - 1, x - 1], [y - 2, x - 2], [y - 3, x - 3]];
+      let diagDR = [[y, x], [y + 1, x + 1], [y + 2, x + 2], [y + 3, x + 3]];
 
       // find winner (only checking each win-possibility as needed)
       if (_win(horiz) || _win(vert) || _win(diagDR) || _win(diagDL)) {
